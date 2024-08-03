@@ -12,7 +12,7 @@ from sklearn.linear_model import LinearRegression
 app = Flask(__name__)
 
 # Load and prepare datasets for yield prediction
-yield_df = pd.read_csv("https://github.com/dheerajreddy71/Design_Project/blob/main/yield_df.csv")
+yield_df = pd.read_csv("https://raw.githubusercontent.com/dheerajreddy71/Design_Project/main/yield_df.csv")
 crop_recommendation_data = pd.read_csv("D:/DESIGN PROJECT/Crop_recommendation.csv")
 
 yield_preprocessor = ColumnTransformer(
@@ -37,7 +37,7 @@ crop_model = RandomForestClassifier(n_estimators=100, random_state=42)
 crop_model.fit(crop_X_train, crop_y_train)
 
 # Load crop data and train the model for temperature prediction
-data = pd.read_csv("https://github.com/dheerajreddy71/Design_Project/blob/main/ds1.csv", encoding='ISO-8859-1')
+data = pd.read_csv("https://raw.githubusercontent.com/dheerajreddy71/Design_Project/main/ds1.csv", encoding='ISO-8859-1')
 data = data.drop(['Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7'], axis=1)
 X = data.drop(['Crop', 'Temperature Required (°F)'], axis=1)
 y = data['Temperature Required (°F)']
@@ -62,22 +62,21 @@ growth_stage_info = {}
 pesticides_info = {}
 
 # Read data from the CSV file and store it in dictionaries
-with open("https://github.com/dheerajreddy71/Design_Project/blob/main/ds2.csv", 'r') as csvfile:
+with open("https://raw.githubusercontent.com/dheerajreddy71/Design_Project/main/ds2.csv", 'r') as csvfile:
     csvreader = csv.reader(csvfile)
+    next(csvreader)  # Skip header row
     for row in csvreader:
         if len(row) >= 2:
             crop = row[0].strip().lower()
             pest = row[1].strip()
             crop_pest_data[crop] = pest
-            humidity_data = row[2].strip()
-        if len(row) >= 3:
-            crop = row[0].strip().lower()
-            planting_time = row[5].strip()
-            planting_time_info[crop] = planting_time
-            growth_stage = row[6].strip()
-            growth_stage_info[crop] = growth_stage
-            pesticides_row = row[4].strip()
-            pesticides_info[crop] = pesticides_row
+            if len(row) >= 3:
+                planting_time = row[5].strip()
+                planting_time_info[crop] = planting_time
+                growth_stage = row[6].strip()
+                growth_stage_info[crop] = growth_stage
+                pesticides_row = row[4].strip()
+                pesticides_info[crop] = pesticides_row
 
 def predict_pest_warnings(crop_name):
     crop_name = crop_name.lower()
@@ -88,26 +87,26 @@ def predict_pest_warnings(crop_name):
     for crop in specified_crops:
         if crop in crop_pest_data:
             pests = crop_pest_data[crop].split(', ')
-            warning_message = f"\nBeware of pests like {', '.join(pests)} for {crop.capitalize()}.\n"
+            warning_message = f"Beware of pests like {', '.join(pests)} for {crop.capitalize()}."
 
             if crop in planting_time_info:
                 planting_time = planting_time_info[crop]
-                warning_message += f"\nPlanting Time: {planting_time}\n"
+                warning_message += f"\nPlanting Time: {planting_time}"
 
             if crop in growth_stage_info:
                 growth_stage = growth_stage_info[crop]
-                warning_message += f"\nGrowth Stages of Plant: {growth_stage}\n"
+                warning_message += f"\nGrowth Stages of Plant: {growth_stage}"
 
             if crop in pesticides_info:
                 pesticides = pesticides_info[crop]
-                warning_message += f"\nUse Pesticides like: {pesticides}\n"
+                warning_message += f"\nUse Pesticides like: {pesticides}"
                 
             pest_warnings.append(warning_message)
 
     return '\n'.join(pest_warnings)
 
 # Load and preprocess crop price data
-price_data = pd.read_csv('https://github.com/dheerajreddy71/Design_Project/blob/main/pred_data.csv', encoding='ISO-8859-1')
+price_data = pd.read_csv('https://raw.githubusercontent.com/dheerajreddy71/Design_Project/main/pred_data.csv', encoding='ISO-8859-1')
 price_data['arrival_date'] = pd.to_datetime(price_data['arrival_date'])
 price_data['day'] = price_data['arrival_date'].dt.day
 price_data['month'] = price_data['arrival_date'].dt.month
@@ -201,10 +200,10 @@ def index():
             input_df['month'] = input_df['arrival_date'].dt.month
             input_df['year'] = input_df['arrival_date'].dt.year
             input_df.drop(['arrival_date'], axis=1, inplace=True)
-            input_encoded = price_encoder.transform(input_df)
 
-            predicted_prices = price_model.predict(input_encoded)
-            min_price, max_price, modal_price = predicted_prices[0]
+            input_encoded = price_encoder.transform(input_df)
+            price_predictions = price_model.predict(input_encoded)
+            min_price, max_price, modal_price = price_predictions[0]
 
     return render_template('index.html', yield_result=yield_result, crop_result=crop_result, min_price=min_price, max_price=max_price, modal_price=modal_price)
 
