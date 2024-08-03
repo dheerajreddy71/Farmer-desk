@@ -12,7 +12,7 @@ from sklearn.linear_model import LinearRegression
 app = Flask(__name__)
 
 # Load and prepare datasets for yield prediction
-yield_df = pd.read_csv("D:/DESIGN PROJECT/yield_df.csv")
+yield_df = pd.read_csv("https://github.com/dheerajreddy71/Design_Project/blob/main/yield_df.csv")
 crop_recommendation_data = pd.read_csv("D:/DESIGN PROJECT/Crop_recommendation.csv")
 
 yield_preprocessor = ColumnTransformer(
@@ -37,7 +37,7 @@ crop_model = RandomForestClassifier(n_estimators=100, random_state=42)
 crop_model.fit(crop_X_train, crop_y_train)
 
 # Load crop data and train the model for temperature prediction
-data = pd.read_csv("D:/DESIGN PROJECT/ds1.csv", encoding='ISO-8859-1')
+data = pd.read_csv("https://github.com/dheerajreddy71/Design_Project/blob/main/ds1.csv", encoding='ISO-8859-1')
 data = data.drop(['Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7'], axis=1)
 X = data.drop(['Crop', 'Temperature Required (°F)'], axis=1)
 y = data['Temperature Required (°F)']
@@ -62,7 +62,7 @@ growth_stage_info = {}
 pesticides_info = {}
 
 # Read data from the CSV file and store it in dictionaries
-with open("D:/DESIGN PROJECT/ds2.csv", 'r') as csvfile:
+with open("https://github.com/dheerajreddy71/Design_Project/blob/main/ds2.csv", 'r') as csvfile:
     csvreader = csv.reader(csvfile)
     for row in csvreader:
         if len(row) >= 2:
@@ -107,7 +107,7 @@ def predict_pest_warnings(crop_name):
     return '\n'.join(pest_warnings)
 
 # Load and preprocess crop price data
-price_data = pd.read_csv('D:/DESIGN PROJECT/pred_data.csv', encoding='ISO-8859-1')
+price_data = pd.read_csv('https://github.com/dheerajreddy71/Design_Project/blob/main/pred_data.csv', encoding='ISO-8859-1')
 price_data['arrival_date'] = pd.to_datetime(price_data['arrival_date'])
 price_data['day'] = price_data['arrival_date'].dt.day
 price_data['month'] = price_data['arrival_date'].dt.month
